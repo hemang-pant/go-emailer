@@ -21,6 +21,7 @@ type EmailRequest struct {
 
 
 func getEmailRequest(c *gin.Context)  {
+  // c = new(gin.Context)
   email := EmailRequest{
     FromEmail:    c.Query("email"),
     FromPassword: c.Query("password"),
@@ -28,16 +29,18 @@ func getEmailRequest(c *gin.Context)  {
     Subject: c.Query("subject"),
     Body:    c.Query("body"),
   }
-  var temp = sendEmail(email);
   // Print the query parameters.
   // fmt.Println("name and age is: ",name, age)
-  c.IndentedJSON(http.StatusOK, temp)
+  c.IndentedJSON(http.StatusOK, sendEmail(email))
 }
 
 func main() {
   router := gin.Default()
   router.GET("/sendEmail", getEmailRequest)
-  router.Run("localhost:8080")
+  router.GET("/", func(c *gin.Context) {
+    c.JSON(200, gin.H{"message": "ok"})
+  })
+  router.Run()
 }
 
 func sendEmail(data EmailRequest) string {
@@ -57,7 +60,7 @@ func sendEmail(data EmailRequest) string {
     // Authentication.
     auth := smtp.PlainAuth("", from, password, smtpHost)
   
-    t, _ := template.ParseFiles("template.html")
+    t,_ := template.ParseFiles("template.html")
   
     var body bytes.Buffer
   
