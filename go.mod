@@ -1,4 +1,4 @@
-module go-emailer
+module go-emailer.com/release
 
 go 1.21.3
 
