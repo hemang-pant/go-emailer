@@ -40,7 +40,10 @@ func main() {
   router.GET("/", func(c *gin.Context) {
     c.JSON(200, gin.H{"message": "ok"})
   })
-  router.Run()
+  router.Run(
+    
+    // For run on specific port
+  )
 }
 
 func sendEmail(data EmailRequest) string {
