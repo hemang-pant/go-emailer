@@ -38,7 +38,7 @@ func main() {
   router := gin.Default()
   router.GET("/sendEmail", getEmailRequest)
   router.GET("/", func(c *gin.Context) {
-    c.JSON(200, gin.H{"message": "ok"})
+    c.JSON(200, gin.H{"message": "running to new container"})
   })
   router.Run(
     
