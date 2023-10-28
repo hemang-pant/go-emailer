@@ -2,6 +2,8 @@ FROM golang:1.21.3
 
 WORKDIR /app
 
+ENV PORT=9000
+
 COPY go.mod .
 COPY go.sum .
 COPY main.go .
@@ -10,4 +12,6 @@ COPY template.html .
 RUN go get
 RUN go build -o bin .
 
-ENTRYPOINT [ "/app/bin" ]
+EXPOSE 9000
+
+ENTRYPOINT [ "/app/bin", "--port", "9000:9000"]
