@@ -8,6 +8,7 @@ COPY go.mod .
 COPY go.sum .
 COPY main.go .
 COPY template.html .
+COPY .env .
 
 RUN go get
 RUN go build -o bin .
