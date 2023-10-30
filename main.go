@@ -58,7 +58,6 @@ func main() {
     fmt.Println("Error loading .env file")
   }
   fmt.Println("Starting server...")
-  fmt.Println("password is: ", os.Getenv("EMAIL_PASSWORD"))
   router := gin.Default()
   router.GET("/sendEmail", getEmailRequest)
   router.GET("/emailTrigger", onEmailOpen)
@@ -76,7 +75,7 @@ func onEmailOpen(c *gin.Context)  {
     ClientEmail:    c.Query("email"),
     TargetEmail: c.Query("to"),
     TemplateId:      c.Query("templateId"),
-    DateTime: time.Now().GoString(),
+    DateTime: time.Now().Format(time.RFC1123),
     Status:    c.Query("status"),
     CampaignId: c.Query("campaignId"),
     NumberOfOpens: 1,
