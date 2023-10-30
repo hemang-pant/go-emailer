@@ -58,6 +58,7 @@ func main() {
     fmt.Println("Error loading .env file")
   }
   fmt.Println("Starting server...")
+  fmt.Println("password is: ", os.Getenv("EMAIL_PASSWORD"))
   router := gin.Default()
   router.GET("/sendEmail", getEmailRequest)
   router.GET("/emailTrigger", onEmailOpen)
@@ -72,19 +73,21 @@ func main() {
 func onEmailOpen(c *gin.Context)  {
 
   trigger := TriggerResponse{
-    ClientEmail:    c.Query("clientEmail"),
-    TargetEmail: c.Query("targetEmail"),
+    ClientEmail:    c.Query("email"),
+    TargetEmail: c.Query("to"),
     TemplateId:      c.Query("templateId"),
-    DateTime: time.Now().Format("2006-01-02 15:04:05"),
+    DateTime: time.Now().GoString(),
     Status:    c.Query("status"),
     CampaignId: c.Query("campaignId"),
-    // NumberOfOpens: 0,
+    NumberOfOpens: 1,
   }
+  fmt.Println(trigger)
+  fmt.Println("password is: ", os.Getenv("EMAIL_PASSWORD"))
   // add data to mongodb
   // Print the query parameters.
   // onEmailOpen
-  
-  c.IndentedJSON(http.StatusOK, sendEmail(
+
+  response := sendEmail(
     EmailRequest{
       FromEmail: trigger.ClientEmail,
       FromPassword: os.Getenv("EMAIL_PASSWORD"),
@@ -94,7 +97,8 @@ func onEmailOpen(c *gin.Context)  {
       CampaignId: trigger.CampaignId,
       TemplateId: trigger.TemplateId,
     },
-  ))
+  )
+  c.IndentedJSON(http.StatusOK, response)
 }
 
 
