@@ -41,7 +41,7 @@ func getEmailRequest(c *gin.Context) {
   c.BindJSON(&email)
 	// Print the query parameters.
 	// fmt.Println("name and age is: ",name, age)
-	c.IndentedJSON(http.StatusOK, sendEmail(email))
+	c.IndentedJSON(http.StatusOK, sendEmail(email, true))
 }
 
 func main() {
@@ -94,11 +94,12 @@ func onEmailOpen(c *gin.Context) {
 			CampaignId:   trigger.CampaignId,
 			TemplateId:   trigger.TemplateId,
 		},
+    false,
 	)
 	c.IndentedJSON(http.StatusOK, response)
 }
 
-func sendEmail(data EmailRequest) string {
+func sendEmail(data EmailRequest, TrackerActive bool) string {
 	// Sender data.
 	from := data.FromEmail
 	password := data.FromPassword
@@ -125,6 +126,7 @@ func sendEmail(data EmailRequest) string {
 	if os.Getenv("ENV") == "prod" {
 		baseUrl = os.Getenv("BASE_URL")
 	}
+  if(TrackerActive){
 	t.Execute(&body, struct {
 		Name    string
 		Message string
@@ -139,8 +141,21 @@ func sendEmail(data EmailRequest) string {
 			"&body=" + data.Body +
 			"&campaignId=" + data.CampaignId +
 			"&templateId=" + data.TemplateId +
+      "&status=opened" +
 			" hidden>",
 	})
+  }else{
+    t.Execute(&body, struct {
+      Name    string
+      Message string
+      Tracker string
+    }{
+      Name:    "name",
+      Message: data.Body,
+      Tracker: "",
+    })
+  }
+
 
 	// Sending email.
 	err := smtp.SendMail(smtpHost+":"+smtpPort, auth, from, to, body.Bytes())
