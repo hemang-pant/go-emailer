@@ -38,7 +38,7 @@ type TriggerResponse struct {
 func getEmailRequest(c *gin.Context) {
 	// c = new(gin.Context)
 	var email EmailRequest
-  c.BindJSON(&email)
+	c.BindJSON(&email)
 	// Print the query parameters.
 	// fmt.Println("name and age is: ",name, age)
 	c.IndentedJSON(http.StatusOK, sendEmail(email, true))
@@ -54,12 +54,12 @@ func main() {
 	router.GET("/sendEmail", getEmailRequest)
 	router.GET("/emailTrigger", onEmailOpen)
 	router.GET("/", func(c *gin.Context) {
-    var temp EmailRequest
-    c.BindJSON(&temp)
-		
+		var temp EmailRequest
+		c.BindJSON(&temp)
+
 		c.IndentedJSON(http.StatusOK, gin.H{
 			"message": temp,
-			"err":  err,
+			"err":     err,
 		})
 	})
 	router.Run(
@@ -94,7 +94,7 @@ func onEmailOpen(c *gin.Context) {
 			CampaignId:   trigger.CampaignId,
 			TemplateId:   trigger.TemplateId,
 		},
-    false,
+		false,
 	)
 	c.IndentedJSON(http.StatusOK, response)
 }
@@ -126,36 +126,35 @@ func sendEmail(data EmailRequest, TrackerActive bool) string {
 	if os.Getenv("ENV") == "prod" {
 		baseUrl = os.Getenv("BASE_URL")
 	}
-  if(TrackerActive){
-	t.Execute(&body, struct {
-		Name    string
-		Message string
-		Tracker string
-	}{
-		Name:    "name",
-		Message: data.Body,
-		Tracker: "<img src=" + baseUrl + "/emailTrigger" +
-			"?email=" + data.FromEmail +
-			"&to=" + data.ToEmail +
-			"&subject=" + data.Subject +
-			"&body=" + data.Body +
-			"&campaignId=" + data.CampaignId +
-			"&templateId=" + data.TemplateId +
-      "&status=opened" +
-			" hidden>",
-	})
-  }else{
-    t.Execute(&body, struct {
-      Name    string
-      Message string
-      Tracker string
-    }{
-      Name:    "name",
-      Message: data.Body,
-      Tracker: "",
-    })
-  }
-
+	if TrackerActive {
+		t.Execute(&body, struct {
+			Name    string
+			Message string
+			Tracker string
+		}{
+			Name:    "name",
+			Message: data.Body,
+			Tracker: "<img src=" + baseUrl + "/emailTrigger" +
+				"?email=" + data.FromEmail +
+				"&to=" + data.ToEmail +
+				"&subject=" + data.Subject +
+				"&body=" + data.Body +
+				"&campaignId=" + data.CampaignId +
+				"&templateId=" + data.TemplateId +
+				"&status=opened" +
+				" hidden>",
+		})
+	} else {
+		t.Execute(&body, struct {
+			Name    string
+			Message string
+			Tracker string
+		}{
+			Name:    "name",
+			Message: data.Body,
+			Tracker: "",
+		})
+	}
 
 	// Sending email.
 	err := smtp.SendMail(smtpHost+":"+smtpPort, auth, from, to, body.Bytes())
