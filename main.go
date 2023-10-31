@@ -90,7 +90,7 @@ func onEmailOpen(c *gin.Context) {
 			FromPassword: os.Getenv("EMAIL_PASSWORD"),
 			ToEmail:      trigger.TargetEmail,
 			Subject:      "EMAIL_Opened",
-			Body:         "templateID:_" + trigger.TemplateId + "_opened_at_:" + trigger.DateTime + "_____status_:" + trigger.Status + "____campaignId_:" + trigger.CampaignId,
+			Body:         "templateID:_" + trigger.TemplateId + "_opened_at_:" + time.Now().Format(time.RFC850) + "_____status_:" + trigger.Status + "____campaignId_:" + trigger.CampaignId,
 			CampaignId:   trigger.CampaignId,
 			TemplateId:   trigger.TemplateId,
 		},
